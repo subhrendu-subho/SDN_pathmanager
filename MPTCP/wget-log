@@ -1,0 +1,12 @@
+--2016-11-29 12:26:43--  http://10.0.1.2/input/transfer.data
+Connecting to 10.0.1.2:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 244207616 (233M) [application/octet-stream]
+Saving to: ‘/dev/null’
+
+31% [===========>                           ] 7,64,35,428 1.06MB/s  eta 2m 24s 31% [===========>                           ] 7,66,61,052 1.04MB/s  eta 2m 24s 31% [===========>                           ] 7,66,77,136 1.05MB/s   in 66s    
+
+2016-11-29 12:27:49 (1.11 MB/s) - Connection closed at byte 76677136. Retrying.
+
+--2016-11-29 12:27:50--  (try: 2)  http://10.0.1.2/input/transfer.data
+Connecting to 10.0.1.2:80... failed: Invalid argument.

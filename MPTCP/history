@@ -1,0 +1,591 @@
+import sys
+from subprocess import Popen, PIPE
+from time import sleep
+import termcolor as T
+import argparse
+import networkx as nx
+import matplotlib.pyplot as plt
+import pickle
+import random
+from mininet.net import Mininet
+from mininet.log import lg
+#from mininet.node import OVSKernelSwitch as Switch
+from mininet.node import UserSwitch as Switch
+from mininet.link import Link, TCLink
+from mininet.util import makeNumeric, custom
+from mininet.cli import CLI
+from functools import partial
+#from topo import TwoHostNInterfaceTopo
+from mininet.node import Controller, RemoteController,OVSController
+from mininet.topo import Topo
+class MultiSwitch( Switch ):
+        "Custom Switch() subclass that connects to different controllers"
+        def start( self, controllers ):
+                return Switch.start( self, [ cmap[ self.name ] ] )
+    #############################################################################
+    # TODO: move to common location; code shared with DCTCP.
+    def progress(t):
+            while t > 0:
+                    print T.colored('  %3d seconds left  \r' % (t), 'cyan'),
+                    t -= 1
+                    sys.stdout.flush()
+                    sleep(1)
+                print '\r\n'
+            #############################################################################
+            def sysctl_set(key, value):
+                    """Issue systcl for given param to given value and check for error."""
+                    p = Popen("sysctl -w %s=%s" % (key, value), shell=True, stdout=PIPE,
+                              stderr=PIPE)
+                    # Output should be empty; otherwise, we have an issue.  
+                    stdout, stderr = p.communicate()
+                    stdout_expected = "%s = %s\n" % (key, value)
+                    if stdout != stdout_expected:
+                            raise Exception("Popen returned unexpected stdout: %s != %s" %
+                                            (stdout, stdout_expected))
+                    if stderr:
+                            raise Exception("Popen returned unexpected stderr: %s" % stderr)
+                #############################################################################
+                def set_mptcp_enabled(enabled):
+                        """Enable MPTCP if true, disable if false"""
+                        e = 1 if enabled else 0
+                        lg.info("setting MPTCP enabled to %s\n" % e)
+                        sysctl_set('net.mptcp.mptcp_enabled', e)
+                    #############################################################################
+                    def set_mptcp_ndiffports(ports):
+                            """Set ndiffports, the number of subflows to instantiate"""
+                            lg.info("setting MPTCP ndiffports to %s\n" % ports)
+                            if(ports !=1):
+                                	sysctl_set("net.mptcp.mptcp_path_manager", "ndiffports")
+                                else:
+                                    	sysctl_set("net.mptcp.mptcp_path_manager", "default")
+                                    #sysctl_set("net.mptcp.mptcp_ndiffports", ports)
+                                #############################################################################
+                                def parse_args():
+                                        parser = argparse.ArgumentParser(description="MPTCP 2-host n-switch test")
+                                        parser.add_argument('--bw', '-B',
+                                                            action="store",
+                                                            help="Bandwidth of links",
+                                                            default=10)
+                                    #                        required=True)
+    parser.add_argument('-n',
+                        action="store",
+                        help="Number of switches.  Must be >= 2",
+                        default=2)
+    parser.add_argument('-t',
+                        action="store",
+                        help="Seconds to run the experiment",
+                        default=2)
+    parser.add_argument('--mptcp',
+                        action="store_true",
+                        help="Enable MPTCP (net.mptcp.mptcp_enabled)",
+                        default=True)
+#                        default=False)
+    parser.add_argument('--pause',
+                        action="store_true",
+                        help="Pause before test start & end (to use wireshark)",
+                        default=False)
+    parser.add_argument('--ndiffports',
+                        action="store",
+                        help="Set # subflows (net.mptcp.mptcp_ndiffports)",
+                        default=2)
+    args = parser.parse_args()
+    args.bw = float(args.bw)
+    args.n = int(args.n)
+    args.ndiffports = int(args.ndiffports)
+    return args
+#############################################################################
+%cpaste
+    lg.setLogLevel('info')
+    topo = pickle.load(open('input/t.pkl'))
+    link = custom(TCLink, 10)
+    link = custom(TCLink, bw=10)
+net = Mininet(topo=topo, switch=MultiSwitch, link=link, xterms=True, cleanup=True)
+net.start()
+cmap = { 's1': c2, 's2': c2 }
+c2 = OVSController( 'c2', ip='127.0.0.1' )
+topo.nodes()
+c2 = OVSController( 'c2', ip='127.0.0.1' )
+#c2=RemoteController( 'c2', ip='172.16.116.79' )
+cmap = { 's_1': c2, 's_3': c2 , 's_4' : c2,  's_5':c2, 's_6':c2, 's_10':c2}
+net.start()
+    link = custom(TCLink, bw=args.bw)
+    net = Mininet(topo=topo, switch=MultiSwitch, link=link, xterms=True, cleanup=True)
+    net.addController(c2)
+net.addController(c2)
+    net.start()
+%cpaste
+cmap['s_1']
+cmap['s_2']
+try: cmap['
+%cpaste
+set_mptcp_enabled(True)
+set_mptcp_ndiffports(2)
+    lg.setLogLevel('info')
+    topo = pickle.load(open('input/t.pkl'))
+set_mptcp_ndiffports(2)
+set_mptcp_enabled(True)
+topo.hosts()]
+topo.hosts()
+topo.nodes()
+topo.hosts()
+host_IDs=net.hosts()
+host_IDs=topo.hosts()
+net = Mininet(topo=topo, switch=MultiSwitch, link=link, xterms=False, cleanup=True)
+link = custom(TCLink, bw=10)
+net = Mininet(topo=topo, switch=MultiSwitch, link=link, xterms=False, cleanup=True)
+net.addController(c2)
+net.hosts()
+net.switch()
+type(net)
+net.switches
+net.getNodeByName('h_1')
+net.getNodeByName('h1')
+topo.nodes()
+net.getNodeByName('h_1_0')
+net.hosts
+net.getNodeByName('s_1_0')
+topo.nodes()
+net.getNodeByName('s_1')
+list(net.hosts)
+net.hosts[1]
+Node(net.hosts[1]).intf()
+Node(net.hosts[1]).cmdPrint("echo")
+net.hosts[1].cmdPrint("echo")
+net.hosts[1].cmdPrint('echo "SUBHO"')
+net.hosts[1].cmdPrint('ifconfig ')
+%save
+import netifaces
+%save temp
+%save -a temp
+%cpaste
+class MultiSwitch( Switch ):
+        "Custom Switch() subclass that connects to different controllers"
+        def start( self, controllers ):
+            	try:
+                    	return Switch.start( self, [ cmap[ self.name ] ] )
+                except Exception, e:
+            	        return Switch.start(self)
+        #############################################################################
+        # TODO: move to common location; code shared with DCTCP.
+        def progress(t):
+                while t > 0:
+                        print T.colored('  %3d seconds left  \r' % (t), 'cyan'),
+                        t -= 1
+                        sys.stdout.flush()
+                        sleep(1)
+                    print '\r\n'
+                #############################################################################
+                def sysctl_set(key, value):
+                        """Issue systcl for given param to given value and check for error."""
+                        p = Popen("sysctl -w %s=%s" % (key, value), shell=True, stdout=PIPE,
+                                  stderr=PIPE)
+                        # Output should be empty; otherwise, we have an issue.  
+                        stdout, stderr = p.communicate()
+                        stdout_expected = "%s = %s\n" % (key, value)
+                        if stdout != stdout_expected:
+                                raise Exception("Popen returned unexpected stdout: %s != %s" %
+                                                (stdout, stdout_expected))
+                        if stderr:
+                                raise Exception("Popen returned unexpected stderr: %s" % stderr)
+                    #############################################################################
+                    def set_mptcp_enabled(enabled):
+                            """Enable MPTCP if true, disable if false"""
+                            e = 1 if enabled else 0
+                            lg.info("setting MPTCP enabled to %s\n" % e)
+                            sysctl_set('net.mptcp.mptcp_enabled', e)
+                        #############################################################################
+                        def set_mptcp_ndiffports(ports):
+                                """Set ndiffports, the number of subflows to instantiate"""
+                                lg.info("setting MPTCP ndiffports to %s\n" % ports)
+                                if(ports !=1):
+                                    	sysctl_set("net.mptcp.mptcp_path_manager", "ndiffports")
+                                    else:
+                                        	sysctl_set("net.mptcp.mptcp_path_manager", "default")
+                                        #sysctl_set("net.mptcp.mptcp_ndiffports", ports)
+                                    #############################################################################
+                                    def parse_args():
+                                            parser = argparse.ArgumentParser(description="MPTCP 2-host n-switch test")
+                                            parser.add_argument('--bw', '-B',
+                                                                action="store",
+                                                                help="Bandwidth of links",
+                                                                default=10)
+                                        #                        required=True)
+    parser.add_argument('-n',
+                        action="store",
+                        help="Number of switches.  Must be >= 2",
+                        default=2)
+    parser.add_argument('-t',
+                        action="store",
+                        help="Seconds to run the experiment",
+                        default=2)
+    parser.add_argument('--mptcp',
+                        action="store_true",
+                        help="Enable MPTCP (net.mptcp.mptcp_enabled)",
+                        default=True)
+#                        default=False)
+    parser.add_argument('--pause',
+                        action="store_true",
+                        help="Pause before test start & end (to use wireshark)",
+                        default=False)
+    parser.add_argument('--ndiffports',
+                        action="store",
+                        help="Set # subflows (net.mptcp.mptcp_ndiffports)",
+                        default=2)
+    args = parser.parse_args()
+    args.bw = float(args.bw)
+    args.n = int(args.n)
+    args.ndiffports = int(args.ndiffports)
+    return args
+#############################################################################
+%cpaste
+    lg.setLogLevel('info')
+    topo = pickle.load(open('input/t.pkl'))
+arg.bw=float(10)
+args.bw=float(10)
+parser = argparse.ArgumentParser(description="MPTCP 2-host n-switch test")
+    parser.add_argument('--bw', '-B',
+                        action="store",
+                        help="Bandwidth of links",
+                        default=10)
+#                        required=True)
+    parser.add_argument('-n',
+                        action="store",
+                        help="Number of switches.  Must be >= 2",
+                        default=2)
+    parser.add_argument('-t',
+                        action="store",
+                        help="Seconds to run the experiment",
+                        default=2)
+    parser.add_argument('--mptcp',
+                        action="store_true",
+                        help="Enable MPTCP (net.mptcp.mptcp_enabled)",
+                        default=True)
+#                        default=False)
+    parser.add_argument('--pause',
+                        action="store_true",
+                        help="Pause before test start & end (to use wireshark)",
+                        default=False)
+    parser.add_argument('--ndiffports',
+                        action="store",
+                        help="Set # subflows (net.mptcp.mptcp_ndiffports)",
+                        default=2)
+args = parser.parse_args()
+type(args)
+    args.bw = float(args.bw)
+    args.n = int(args.n)
+    args.ndiffports = int(args.ndiffports)
+args
+    link = custom(TCLink, bw=args.bw)
+    net = Mininet(topo=topo, switch=MultiSwitch, link=link, xterms=True, cleanup=True)
+net.addController(c2)
+setup(args)
+net.start()
+    seconds = int(args.t)
+    hosts=net.hosts
+    switches=net.switches
+netifaces.ifaddresses()
+netifaces
+netifaces.interfaces()
+    hosts[1]
+    hosts[2]
+    hosts[4]
+    hosts[5]
+switches[1]
+    hosts[5].ifconfig()
+    hosts[5].intfs
+len(hosts[5].intfs)
+len(switch[2].intfs)
+len(switches[2].intfs)
+switches[5].intfs
+switches[2].intfs
+switches[2].intfs [1:]
+temp=switches[2].intfs
+type(temp)
+del(temp[0])
+temp
+temp[1]
+temp.keys()
+h
+h=hosts[1]
+h
+h.name()
+h.name
+[i for i,x in enumerate(hosts) if x == h.name]
+[i for i,x in enumerate(hosts.name) if x == h.name]
+[i for i,x in enumerate(hosts) if x.name == h.name]
+[i for i,x in enumerate(hosts) if x== h]
+    for hid,h in enumerate(hosts):
+      print hid
+      print h
+    for hid,h in enumerate(hosts):
+      print hid,h
+%cpaste
+    args = parse_args()
+    lg.setLogLevel('info')
+    topo = pickle.load(open('input/t.pkl'))
+%cpaste
+args
+    seconds = int(args.t)
+    hosts=net.hosts
+    switches=net.switches
+hid,h in enumerate(hosts[1])
+hid=1
+h=hosts[hid]
+h
+H= pickle.load(open('input/oregon_switch.pkl'))# CheckPoint
+pos=nx.spring_layout(H)
+nx.draw_networkx(H,pos)
+nx.draw_networkx(H)
+H
+H.nodes()
+topo.convertTo(networkx.MultiGraph,data=True,keys=True)
+topo.convertTo(nx.MultiGraph,data=True,keys=True)
+G=topo.convertTo(nx.MultiGraph,data=True,keys=True)
+nx.write_dot(G,'topo.dot')
+%cpaste
+args
+nx.write_dot(G,'topo.dot')
+!neato -T png topo.dot > top.png
+pwd
+h
+hosts[1]
+    hosts=net.hosts
+    switches=net.switches
+ls
+%ls
+topo
+    link = custom(TCLink, bw=args.bw)
+    #net = Mininet(topo=topo, switch=MultiSwitch, link=link, xterms=True, cleanup=True)
+    net = Mininet(topo=topo, switch=MultiSwitch, link=link, xterms=False, cleanup=True)
+    #for c in [ c0, c1 ]:
+    net.addController(c2)
+    #net.addController("ovs_ctrl",controller=OVSController)
+    #net = Mininet(topo=topo, switch=Switch, link=link, xterms=False, cleanup=True)
+    setup(args)
+    #net.build()
+    net.start()
+    net = Mininet(topo=topo, switch=MultiSwitch, link=link, xterms=False, cleanup=True)
+    setup(args)
+    #net.build()
+    net.start()
+    seconds = int(args.t)
+    hosts=net.hosts
+    switches=net.switches
+hosts[1].cmdPrint("ip route -n")
+hosts[1].cmdPrint("route -n")
+net.stop()
+net = Mininet(topo=topo, switch=MultiSwitch, link=link, xterms=False, cleanup=True)
+%cpaste
+args.mptcp
+dev
+%cpaste
+    args = parse_args()
+    lg.setLogLevel('info')
+    topo = TwoHostNInterfaceTopo(n=args.n)
+def drawTopology(topo):
+        G=topo.convertTo(nx.MultiGraph,data=True,keys=True)
+        nx.write_dot(G,'topo.dot')
+        !neato -T png topo.dot > topo.png
+drawTopology(topo)
+import networkx as nx
+drawTopology(topo)
+    link = custom(TCLink, bw=args.bw)
+    net = Mininet(topo=topo, switch=MultiSwitch, link=link, xterms=True, cleanup=True)
+    setup(args)
+net.start()
+%cpaste
+dev
+table
+sudo mn -c
+exec("sudo mn -c")
+exec("mn -c")
+net.stop
+net.stop()
+net = Mininet(topo=topo, switch=MultiSwitch, link=link, xterms=True, cleanup=True)
+    h1 = net.getNodeByName('h1')
+    h2 = net.getNodeByName('h2')
+    s1 = net.getNodeByName('s1')
+    s2 = net.getNodeByName('s2')
+h1.cmdPrint("route -n")
+h1.cmdPrint("ifconfig")
+%cpaste
+args
+%cpaste
+net.stop()
+from mininet.topo import Topo
+from mininet.net import Mininet
+from mininet.link import TCLink
+from mininet.util import custom
+import networkx as nx
+import matplotlib.pyplot as plt
+import pickle
+import random
+H= pickle.load(open('input/small.pkl'))# CheckPoint
+H.nodes()
+H.nodes(data=True)
+H= pickle.load(open('input/oregon_switch.pkl'))# CheckPoint
+H[1]
+H.nodes(data=True)
+H= pickle.load(open('input/small.pkl'))# CheckPoint
+pickle.dump( t, open( "topology_small.pkl", "wb" ) )
+%edit 0.TopologyGenerator.py
+%cpaste
+pwd
+t
+%cpaste
+H= pickle.load(open('input/oregon_switch.pkl'))# CheckPoint
+H[1]
+H[1](data=True)
+H[1].(data=True)
+H(data=True)
+H.nodes(data=True).[1]
+H.nodes(data=True)[1]
+H.nodes(data=True)[2]
+H.nodes(data=True)[3]
+G= pickle.load(open('input/small.pkl'))# CheckPoint
+G[1]
+nx.set_node_attributes(G, 'switch', True)
+G.nodes(data=True)
+H.nodes(data=True)[1:10]
+nx.set_node_attributes(G, 'switch', True)
+nx.add_node_attributes(G, 'switch', True)
+nx.set_node_attributes(G,"switch",True)
+nx.set_node_attributes(G,"switch",bool(True))
+nx.set_node_attributes(G,"switch")
+nx.set_node_attributes(G,"switch",T)
+nx.set_node_attributes(G,"switch",'T')
+%cpaste
+t
+t.nodes()
+		cpu=.1
+		max_queue_size=None
+		t=Topo()
+		H= pickle.load(open('input/small.pkl'))# CheckPoint
+		number_of_hosts=1
+		switches=[u for u in H.nodes()]
+switches
+		hostConfig = {'cpu': cpu,'switch':False}
+		linkConfig = {'bw': 2, 'delay': '1ms', 'loss': 0.5,'max_queue_size': max_queue_size }
+for i,s in enumerate(switches):
+    print i,s
+s[0]
+for i in H.nodes():
+    i['switch']=True
+i
+for i in H.nodes():
+    H[i]['switch']=True
+H.nodes(data=True)
+H[]
+H= pickle.load(open('input/oregon_switch.pkl'))# CheckPoint
+H[1]
+H.nodes(data=True)[1]
+H.nodes(data=True)[2]
+H.nodes(data=True)[1:10]
+G= pickle.load(open('input/small.pkl'))# CheckPoint
+G.nodes()
+H.nodes()
+candidate=list(H.nodes())
+candidate.remove(G.nodes())
+candidate.remove(list(G.nodes()))
+for i in list(G.nodes()):
+    candidate.remove(i)
+candidate
+H.remove_nodes_from(candidate)
+H
+H.nodes(data=True)
+H.edges()
+H.add_edges_from(G)
+G.nodes()
+H.nodes()
+for i,j in G.edges():
+    H.add_edge(i,j)
+H.edges(data=True)
+		# Initialize topo
+		cpu=.1
+		max_queue_size=None
+		Topo.__init__(self, **params)
+		#TODO: Create your Mininet Topology here!
+		# Change Topo object t into self for usefull class
+		t=Topo()
+		H= pickle.load(open('input/small.pkl'))# CheckPoint
+		number_of_hosts=1
+		number_of_interfaces
+		# Prepare host and switch nodes
+		switches=[u for u in H.nodes()]
+		hostConfig = {'cpu': cpu,'switch':False}
+		linkConfig = {'bw': 2, 'delay': '1ms', 'loss': 0.5,'max_queue_size': max_queue_size }
+		for i,s in enumerate(switches):
+    			for i in xrange(0,number_of_hosts):
+        				host_id='%d_%d'%(s[0],i)
+        				H.add_node(host_id,**hostConfig)
+        				H.add_edge(s[0],host_id,**linkConfig)
+%cpaste
+H
+H.nodes()
+H.nodes(data=True)
+G.nodes()
+G= pickle.load(open('input/oregon_switch.pkl'))# CheckPoint
+H= pickle.load(open('input/small.pkl'))# CheckPoint
+G.remove_edges_from(candidate)
+candidate
+G.remove_nodes_from(candidate)
+G.nodes(data=True)
+for i,j in H.edges():
+    G.add_edge(i,j)
+G.number_of_edges()
+nx.draw(G)
+plt.show()
+switches=[u for u in H.nodes(data=True) if u[1]['switch']==True]
+H=G
+switches=[u for u in H.nodes(data=True) if u[1]['switch']==True]
+switches
+		hostConfig = {'cpu': cpu,'switch':False}
+		linkConfig = {'bw': 2, 'delay': '1ms', 'loss': 0.5,'max_queue_size': max_queue_size }
+for i,s in enumerate(switches):
+    print i,s
+temp=list(switches)
+temp
+i=1
+s
+for i,s in enumerate(switches):
+    
+    
+    print i,s
+i
+s
+temp[i]
+temp[i-1]
+temp[i-1][0]
+%cpaste
+type(u)
+u
+u=temp[i-1]
+temp
+temp[2]
+i
+%cpaste
+		hostConfig = {'cpu': cpu,'switch':False}
+		linkConfig = {'bw': 2, 'delay': '1ms', 'loss': 0.5,'max_queue_size': max_queue_size }
+%cpaste
+H
+H.nodes(data=True)
+%cpaste
+t
+t.nodes()
+%cpaste
+G=topo.convertTo(nx.MultiGraph,data=True,keys=True)
+nx.draw(G)
+plt.show()
+pos=nx.spring_layout(G)
+nx.draw(G,pos)
+plt.show()
+%cpaste
+    setup(args)
+    #net.build()
+    for controller in net.controllers:
+            controller.start()
+net.build()
+%cpaste
+%cpaste
+import readline
+readline.write_history_file('history')

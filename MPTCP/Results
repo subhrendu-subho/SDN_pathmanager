@@ -1,0 +1,32 @@
+Note:
+h2 iperf -s&
+h3 iperf -c 10.0.0.2 -i 2 -t 2
+----------------------------------------------------------------------
+Results:
+----------------------------------------------------------------------
+Without MP option ODL controller
+------------------------------------------------------------------
+[  3] local 10.0.0.3 port 50617 connected with 10.0.0.2 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-10.0 sec  6.75 MBytes  5.66 Mbits/sec
+[  3] 10.0-20.0 sec  8.00 MBytes  6.71 Mbits/sec
+[  3]  0.0-20.1 sec  14.9 MBytes  6.20 Mbits/sec
+----------------------------------------------------------------------
+With MP option ODL controller
+----------------------------------------------------------------------
+[  3] local 10.0.0.3 port 50626 connected with 10.0.0.2 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0- 2.0 sec  2.88 MBytes  12.1 Mbits/sec
+[  3]  0.0- 2.1 sec  3.00 MBytes  12.2 Mbits/sec
+----------------------------------------------------------------------
+With MP option [2,5->OVSController] [rest ODL]
+----------------------------------------------------------------------
+[  3] local 10.0.0.3 port 50636 connected with 10.0.0.2 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0- 2.0 sec  4.38 MBytes  18.4 Mbits/sec
+[  3]  0.0- 2.1 sec  4.50 MBytes  18.1 Mbits/sec
+----------------------------------------------------------------------
+Without MP option [2,5->OVSController] [rest ODL]
+----------------------------------------------------------------------
+no route to host
+
